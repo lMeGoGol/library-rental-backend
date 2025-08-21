@@ -1,6 +1,6 @@
 Backend API для бібліотеки на Node.js + Express + MongoDB
 
-Інструкція:
+🚀Інструкція:
 
 1. Встановлення залежностей
 npm install
@@ -21,32 +21,32 @@ npm start
 Після запуску API буде доступне на:
 http://localhost:5000/api
 
-Основні ендпоінти:
+📌Основні ендпоінти:
 
-Auth
+🔑Auth
 -POST /api/auth/register — реєстрація
 -POST /api/auth/login — логін
 
-Books
+📖Books
 -GET /api/books — список книг
 -POST /api/books — створити книгу (admin, librarian)
 -PUT /api/books/:id — оновити книгу (admin, librarian)
 -DELETE /api/books/:id — видалити книгу (admin)
 
-Users
+👤Users
 -GET /api/users — список користувачів (admin, librarian)
 -GET /api/users/:id — переглянути користувача (self, librarian, admin)
 -PUT /api/users/:id — оновити користувача (self, librarian, admin)
 -DELETE /api/users/:id — видалити користувача (admin)
 -POST /api/users/:id/role — змінити роль (admin)
 
-Loans
+📦Loans
 -POST /api/loans/issue — видати книгу (admin, librarian)
 -POST /api/loans/return/:id — повернути книгу (admin, librarian)
 -GET /api/loans — список усіх прокатів (admin, librarian)
 -GET /api/loans/my — мої прокати (reader)
 
-Використані технології:
+🛠Використані технології:
 -Node.js
 -Express
 -MongoDB + Mongoose
