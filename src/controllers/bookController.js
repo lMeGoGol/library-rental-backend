@@ -1,28 +1,29 @@
-const Book = require("../models/Book");
+const bookService = require('../services/bookService');
 
 exports.create = async (req, res) => {
-    const book = await Book.create(req.body);
+    const book = await bookService.create(req.body);
     res.status(201).json(book);
 };
 
 exports.list = async (req, res) => {
-    const items = await Book.find();
+    const isReader = req.user && req.user.role === 'reader';
+    const query = { ...req.query };
+    if (isReader) query.available = true;
+    const items = await bookService.list(query);
     res.json(items);
 };
 
 exports.get = async (req, res) => {
-    const item = await Book.findById(req.params.id);
-    if (!item) return res.status(404).json({ message: "Not found" });
+    const item = await bookService.get(req.params.id);
     res.json(item);
 }
 
 exports.update = async (req, res) => {
-    const item = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!item) return res.status(404).json({ message: "Not found" });
+    const item = await bookService.update(req.params.id, req.body);
     res.json(item);
 }
 
 exports.remove = async (req, res) => {
-    await Book.findByIdAndDelete(req.params.id);
+    await bookService.remove(req.params.id);
     res.status(204).end();
 };

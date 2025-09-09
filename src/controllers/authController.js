@@ -1,51 +1,44 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { createError } = require('../utils/errors');
 
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret123";
+const JWT_SECRET = (() => {
+    if (!process.env.JWT_SECRET) {
+        if (process.env.NODE_ENV === 'production') throw new Error('JWT_SECRET must be set in production');
+        return 'supersecret123';
+    }
+    return process.env.JWT_SECRET;
+})();
 
-// Generate token
 const generateToken = (user) => {
     return jwt.sign(
-        { id: user._id, role: user.role },
+        { id: user._id, role: user.role, username: user.username },
         JWT_SECRET,
         { expiresIn: "1d" }
     );
 };
 
-// Registration
 exports.register = async (req, res) => {
-    try {
-        const { username, password, lastName, firstName, middleName, address, phone, discountCategory } = req.body;
-        
-        // Unique username validation
-        const exists = await User.findOne({ username });
-        if (exists) return res.status(400).json({ message: "Username already taken" });
-
-        const user = new User({ username, password, role: "reader", lastName, firstName, middleName, address, phone, discountCategory });
-
-        await user.save();
-
-        const token = generateToken(user);
-
-        res.status(201).json({ message: "User registered", token, role: user.role });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+    let { username, password, lastName, firstName, middleName, address, phone, discountCategory } = req.body;
+    username = (username || '').trim();
+    const exists = await User.findOne({ username });
+    if (exists) throw createError(400, 'USERNAME_TAKEN', 'Username already taken');
+    const user = new User({ username, password, role: 'reader', lastName, firstName, middleName, address, phone, discountCategory });
+    await user.save();
+    const token = generateToken(user);
+    res.status(201).json({ message: 'User registered', token, role: user.role });
 };
 
-// Login
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+    username = (username || '').trim();
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ message: "User not found" });
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid data" });
-
+    if (!user) throw createError(400, 'INVALID_CREDENTIALS', 'Invalid credentials');
+    let isMatch = false;
+    try {
+        isMatch = await user.comparePassword(password);
+    } catch (e) { isMatch = false; }
+    if (!isMatch) throw createError(400, 'INVALID_CREDENTIALS', 'Invalid credentials');
     const token = generateToken(user);
-
-    res.json({
-        token,
-        role: user.role
-    });
+    res.json({ token, role: user.role });
 };

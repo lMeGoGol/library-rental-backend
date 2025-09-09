@@ -4,7 +4,7 @@
   "description": "Express + MongoDB",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node -e \"console.log('no tests')\"",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
@@ -25,10 +25,14 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
+    
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.2",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1"
+    "swagger-ui-express": "^5.0.1",
+    
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

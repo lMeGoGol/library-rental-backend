@@ -41,6 +41,10 @@ const issuedBookSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    renewals: {
+        type: Number,
+        default: 0,
+    },
     deposit: {
         type: Number,
         required: true
@@ -56,8 +60,21 @@ const issuedBookSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["issued", "returned"],
-        dfault: "issued"
+    default: "issued"
     }
 }, { timestamps: true });
+
+issuedBookSchema.set('toJSON', {
+    transform: (doc, ret) => {
+        ret.id = ret._id?.toString();
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+    }
+});
+
+issuedBookSchema.index({ reader: 1, status: 1, createdAt: -1 });
+issuedBookSchema.index({ book: 1, status: 1 });
+issuedBookSchema.index({ expectedReturnDate: 1, status: 1 });
 
 module.exports = mongoose.model("IssuedBook", issuedBookSchema);
