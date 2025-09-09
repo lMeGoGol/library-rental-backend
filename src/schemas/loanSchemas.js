@@ -13,7 +13,7 @@ const previewIssueSchema = issueBase;
 const returnLoanSchema = z.object({
   damaged: z.boolean().optional(),
   damageFee: z.coerce.number().nonnegative().optional(),
-  damageLevel: z.enum(['none','minor','moderate','severe']).optional(),
+  damageLevel: z.enum(['minor','moderate','severe']).optional(),
 });
 const renewLoanSchema = z.object({
   extraDays: z.coerce.number().int().min(1).max(365),
