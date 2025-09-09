@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Library Rental API", "version": "1.1.0" },
+  "servers": [{ "url": "/api" }],
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "schemas": {
+      "Error": { "type": "object", "properties": { "code": {"type":"string"}, "message": {"type":"string"} } },
+      "Book": { "type": "object", "properties": { "id": {"type":"string"}, "title": {"type":"string"}, "author": {"type":"string"}, "availableCount": {"type":"integer"} } },
+      "User": { "type": "object", "properties": { "id": {"type":"string"}, "username": {"type":"string"}, "role": {"type":"string"} } },
+      "Loan": { "type": "object", "properties": { "id": {"type":"string"}, "status": {"type":"string"}, "expectedReturnDate": {"type":"string","format":"date-time"} } },
+      "Reservation": { "type": "object", "properties": { "id": {"type":"string"}, "status": {"type":"string"}, "book": {"$ref":"#/components/schemas/Book"} } }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": { "summary": "Health check", "responses": { "200": { "description": "OK" } } }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "username": {"type":"string"}, "password": {"type":"string"} }, "required": ["username","password"] } } } },
+        "responses": { "200": { "description": "Token issued" } }
+      }
+    },
+    "/auth/register": {
+      "post": { "summary": "Register", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type":"object", "properties": { "username": {"type":"string"}, "password": {"type":"string"} }, "required": ["username","password"] } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/books": {
+      "get": { "security": [{"bearerAuth":[]}], "summary": "List books", "responses": { "200": { "description": "List" } } },
+      "post": { "security": [{"bearerAuth":[]}], "summary": "Create book", "responses": { "201": { "description": "Created" } } }
+    },
+    "/books/{id}": {
+      "get": { "security": [{"bearerAuth":[]}], "summary": "Get book", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": {"description":"OK"}, "404": {"description":"Not found"} } },
+      "put": { "security": [{"bearerAuth":[]}], "summary": "Update book", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": {"description":"Updated"} } },
+      "delete": { "security": [{"bearerAuth":[]}], "summary": "Delete book", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "204": {"description":"Deleted"} } }
+    },
+    "/loans": {
+      "get": { "security": [{"bearerAuth":[]}], "summary": "List loans", "responses": { "200": { "description": "List" } } }
+    },
+    "/loans/issue": {
+      "post": { "security": [{"bearerAuth":[]}], "summary": "Issue loan", "responses": { "201": { "description": "Issued" } } }
+    },
+    "/loans/issue/preview": {
+      "post": { "security": [{"bearerAuth":[]}], "summary": "Preview issue totals", "responses": { "200": { "description": "OK" } } }
+    },
+    "/loans/return/{id}": {
+      "post": { "security": [{"bearerAuth":[]}], "summary": "Return loan", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": { "description": "Returned" } } }
+    },
+    "/loans/renew/{id}": {
+      "post": { "security": [{"bearerAuth":[]}], "summary": "Renew loan", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": { "description": "Renewed" } } }
+    },
+    "/loans/overdue": {
+      "get": { "security": [{"bearerAuth":[]}], "summary": "Overdue loans", "responses": { "200": { "description": "List" } } }
+    },
+    "/reservations": { "get": { "security": [{"bearerAuth":[]}], "summary": "List reservations", "responses": { "200": { "description": "List" } } } },
+    "/reservations/mine": { "get": { "security": [{"bearerAuth":[]}], "summary": "My reservations", "responses": { "200": { "description": "List" } } } },
+    "/reservations/{id}/cancel": { "post": { "security": [{"bearerAuth":[]}], "summary": "Cancel reservation", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": { "description": "Cancelled" } } } },
+    "/users": { "get": { "security": [{"bearerAuth":[]}], "summary": "List users", "responses": { "200": { "description": "List" } } } },
+    "/users/{id}": { "get": { "security": [{"bearerAuth":[]}], "summary": "Get user", "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string"}}], "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } } } }
+  }
+}
